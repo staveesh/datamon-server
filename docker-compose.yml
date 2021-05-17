@@ -1,0 +1,35 @@
+version: '3'
+networks:
+  backend:
+    driver: bridge
+services:
+  app:
+    build: .
+    container_name: hci_usage_app
+    image: staveesh/hci_video_bw_usage
+    ports:
+      - "${HTTP_SERVER_PORT}:${HTTP_SERVER_PORT}"
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - backend
+    links:
+      - mongodb
+    env_file:
+      - .env
+  mongodb:
+    container_name: hci_mongodb
+    image: mongo:latest
+    ports:
+      - "${MONGODB_PORT}:${MONGODB_PORT}"
+    environment:
+      MONGO_INITDB_DATABASE: "${MONGODB_NAME}"
+      MONGO_INITDB_ROOT_USERNAME: "${MONGODB_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_PASSWORD}"
+    volumes:
+      - /var/lib/hciBW/mongodb:/data/db
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - backend
