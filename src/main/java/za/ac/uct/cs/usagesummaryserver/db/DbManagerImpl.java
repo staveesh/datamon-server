@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import za.ac.uct.cs.usagesummaryserver.dto.SummaryData;
 import za.ac.uct.cs.usagesummaryserver.repository.SummaryDataRepository;
 
+import java.util.List;
+
 @Component
 public class DbManagerImpl implements DbManager{
 
@@ -18,5 +20,10 @@ public class DbManagerImpl implements DbManager{
     @Override
     public void writeData(SummaryData data) {
         repository.save(data);
+    }
+
+    @Override
+    public List<SummaryData> getAll() {
+        return repository.findAll();
     }
 }
