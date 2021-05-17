@@ -51,7 +51,8 @@ public class CollectionController {
 
         try {
             csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-            String[] csvHeader = {"User ID", "E-mail", "Full Name", "Roles", "Enabled"};
+            String[] csvHeader = {"deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
+                    "operator1", "downloadMobile1", "uploadMobile1", "operator2", "downloadMobile2", "uploadMobile2"};
             String[] nameMapping = {"deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
                     "operator1", "downloadMobile1", "uploadMobile1", "operator2", "downloadMobile2", "uploadMobile2"};
 
