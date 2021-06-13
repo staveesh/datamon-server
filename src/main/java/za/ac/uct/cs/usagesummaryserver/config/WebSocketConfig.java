@@ -39,7 +39,8 @@ public class WebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfi
         StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
         GenericMessage connectHeader = (GenericMessage)sha.getHeader(SimpMessageHeaderAccessor.CONNECT_MESSAGE_HEADER);
         Map<String, List<String>> nativeHeaders = (Map<String, List<String>>) connectHeader.getHeaders().get(SimpMessageHeaderAccessor.NATIVE_HEADERS);
-        connections.put(sha.getSessionId(), nativeHeaders.get("deviceId").get(0));
+        String deviceId = nativeHeaders.get("deviceId").get(0);
+        connections.put(sha.getSessionId(), deviceId);
     }
 
     @EventListener

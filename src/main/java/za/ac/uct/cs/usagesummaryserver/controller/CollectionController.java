@@ -83,6 +83,8 @@ public class CollectionController {
                 }
                 // Wifi
                 for(AppUsage wifiSummary : summary.getWifiSummary()){
+                    if(wifiSummary == null)
+                        continue;
                     CSVColumn theColumn = columnMap.get(wifiSummary.getApp());
                     theColumn.setDownloadWifiBytes(wifiSummary.getRx());
                     theColumn.setUploadWifiBytes(wifiSummary.getTx());
@@ -90,6 +92,8 @@ public class CollectionController {
                 List<String> operators = new ArrayList<>();
                 // Mobile data
                 for(AppUsage mobileSummary : summary.getMobileSummary()){
+                    if(mobileSummary == null)
+                        continue;
                     CSVColumn theColumn = columnMap.get(mobileSummary.getApp());
                     String theOperator = mobileSummary.getOperator();
                     if(!operators.contains(theOperator))
