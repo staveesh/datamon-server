@@ -5,8 +5,8 @@ networks:
 services:
   app:
     build: .
-    container_name: hci_usage_app
-    image: staveesh/hci_video_bw_usage
+    container_name: datamon
+    image: staveesh/datamon
     ports:
       - "${HTTP_SERVER_PORT}:${HTTP_SERVER_PORT}"
     volumes:
@@ -19,7 +19,7 @@ services:
     env_file:
       - .env
   mongodb:
-    container_name: hci_mongodb
+    container_name: datamongo
     image: mongo:latest
     ports:
       - "${MONGODB_PORT}:${MONGODB_PORT}"
@@ -28,7 +28,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: "${MONGODB_USERNAME}"
       MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_PASSWORD}"
     volumes:
-      - /var/lib/hciBW/mongodb:/data/db
+      - /var/lib/datamon/mongodb:/data/db
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:

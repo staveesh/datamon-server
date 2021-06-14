@@ -22,7 +22,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/start").permitAll()
                 .antMatchers("/stop").permitAll()
-                .antMatchers("/uctHci/**").permitAll()
                 .and()
                 .cors()
                 .and()
