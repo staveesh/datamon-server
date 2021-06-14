@@ -3,6 +3,7 @@ package za.ac.uct.cs.usagesummaryserver.dto;
 import java.util.Date;
 
 public class CSVColumn {
+    private String institution;
     private String deviceId;
     private Date startTime;
     private Date endTime;
@@ -15,6 +16,14 @@ public class CSVColumn {
     private String operator2;
     private long downloadMobile2;
     private long uploadMobile2;
+
+    public String getInstitution() {
+        return institution;
+    }
+
+    public void setInstitution(String institution) {
+        this.institution = institution;
+    }
 
     public String getDeviceId() {
         return deviceId;

@@ -9,11 +9,21 @@ import java.util.List;
 
 @Document("usage_data")
 public class SummaryData {
+    private String institution;
     private String deviceId;
     private Date startTime;
     private Date endTime;
     private List<AppUsage> wifiSummary;
     private List<AppUsage> mobileSummary;
+
+    @JsonProperty("institution")
+    public String getInstitution() {
+        return institution;
+    }
+
+    public void setInstitution(String institution) {
+        this.institution = institution;
+    }
 
     @JsonProperty("deviceId")
     public String getDeviceId() {

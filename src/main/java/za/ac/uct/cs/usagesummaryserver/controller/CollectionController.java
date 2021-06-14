@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
+import za.ac.uct.cs.usagesummaryserver.config.WebSocketConfig;
 import za.ac.uct.cs.usagesummaryserver.db.DbManager;
 import za.ac.uct.cs.usagesummaryserver.dto.AppUsage;
 import za.ac.uct.cs.usagesummaryserver.dto.CSVColumn;
@@ -39,21 +40,29 @@ public class CollectionController {
         return ResponseEntity.ok().build();
     }
 
+    @RequestMapping(value = "/raffle", method = RequestMethod.GET)
+    public ResponseEntity<?> raffle(){
+        Optional<String> deviceId = WebSocketConfig.connections.values().stream().findAny();
+        deviceId.ifPresent(s -> messagingTemplate.convertAndSendToUser(s, "/raffle/notification", "VICTORY"));
+        if(deviceId.isPresent()) return ResponseEntity.ok().body(deviceId.get());
+        return ResponseEntity.ok().build();
+    }
+
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     public void startExport(HttpServletResponse response){
         response.setContentType("text/csv");
 
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=users.csv";
+        String headerValue = "attachment; filename=summary.csv";
         response.setHeader(headerKey, headerValue);
 
         ICsvBeanWriter csvWriter = null;
 
         try {
             csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-            String[] csvHeader = {"deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
+            String[] csvHeader = {"institution", "deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
                     "operator1", "downloadMobile1", "uploadMobile1", "operator2", "downloadMobile2", "uploadMobile2"};
-            String[] nameMapping = {"deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
+            String[] nameMapping = {"institution", "deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
                     "operator1", "downloadMobile1", "uploadMobile1", "operator2", "downloadMobile2", "uploadMobile2"};
 
             List<String> packages = new ArrayList<String>(){{
@@ -61,12 +70,14 @@ public class CollectionController {
                 add("com.whatsapp");
                 add("com.google.android.apps.meetings");
                 add("us.zoom.videomeetings");
+                add("com.vulapplication.vulapackage");
             }};
             csvWriter.writeHeader(csvHeader);
 
             List<SummaryData> data = dbManager.getAll();
 
             for (SummaryData summary : data) {
+                String institution = summary.getInstitution();
                 String deviceId = summary.getDeviceId();
                 Date startTime = summary.getStartTime();
                 Date endTime = summary.getEndTime();
@@ -74,6 +85,7 @@ public class CollectionController {
                 Map<String, CSVColumn> columnMap = new HashMap<>();
                 for(String pckg : packages){
                     CSVColumn col = new CSVColumn();
+                    col.setInstitution(institution);
                     col.setDeviceId(deviceId);
                     col.setStartTime(startTime);
                     col.setEndTime(endTime);

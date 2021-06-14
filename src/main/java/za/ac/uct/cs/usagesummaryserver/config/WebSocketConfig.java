@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
 
-    public static final Map<String, String> connections = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> connections = new ConcurrentHashMap<>();
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -31,7 +31,7 @@ public class WebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfi
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/uctHci");
+        registry.addEndpoint("/uctDataMon");
     }
 
     @EventListener
