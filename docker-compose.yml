@@ -10,6 +10,7 @@ services:
     ports:
       - "${HTTP_SERVER_PORT}:${HTTP_SERVER_PORT}"
     volumes:
+      - /etc/ssl/private:/etc/ssl/private
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
