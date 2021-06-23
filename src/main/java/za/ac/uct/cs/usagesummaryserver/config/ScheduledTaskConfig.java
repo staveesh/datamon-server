@@ -6,15 +6,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.HashSet;
+import java.util.stream.Collectors;
+
 @Configuration
 @EnableScheduling
 public class ScheduledTaskConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTaskConfig.class);
 
-    @Scheduled(fixedDelay = 6000)
+    @Scheduled(fixedDelay = 120000)
     public void activeConnectionsCount() {
-        logger.info("Active connections : "+WebSocketConfig.connections);
-        logger.info("Number of active connections : "+WebSocketConfig.connections.size());
+        logger.info("Number of active connections : "+ new HashSet<>(WebSocketConfig.connections.values()));
     }
 }
