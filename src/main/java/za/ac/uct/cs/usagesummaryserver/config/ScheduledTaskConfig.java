@@ -17,6 +17,6 @@ public class ScheduledTaskConfig {
 
     @Scheduled(fixedDelay = 120000)
     public void activeConnectionsCount() {
-        logger.info("Number of active connections : "+ new HashSet<>(WebSocketConfig.connections.values()));
+        logger.info("Number of active connections : "+ new HashSet<>(WebSocketConfig.connections.values()).size());
     }
 }
