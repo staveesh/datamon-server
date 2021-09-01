@@ -7,14 +7,14 @@ public class CSVColumn {
     private Date startTime;
     private Date endTime;
     private String app;
-    private long downloadWifiBytes;
-    private long uploadWifiBytes;
+    private Double downloadWifi;
+    private Double uploadWifi;
     private String operator1;
-    private long downloadMobile1;
-    private long uploadMobile1;
+    private Double downloadMobile1;
+    private Double uploadMobile1;
     private String operator2;
-    private long downloadMobile2;
-    private long uploadMobile2;
+    private Double downloadMobile2;
+    private Double uploadMobile2;
 
     public String getDeviceId() {
         return deviceId;
@@ -48,20 +48,20 @@ public class CSVColumn {
         this.app = app;
     }
 
-    public long getDownloadWifiBytes() {
-        return downloadWifiBytes;
+    public Double getDownloadWifi() {
+        return downloadWifi;
     }
 
-    public void setDownloadWifiBytes(long downloadWifiBytes) {
-        this.downloadWifiBytes = downloadWifiBytes;
+    public void setDownloadWifi(Double downloadWifi) {
+        this.downloadWifi = downloadWifi;
     }
 
-    public long getUploadWifiBytes() {
-        return uploadWifiBytes;
+    public Double getUploadWifi() {
+        return uploadWifi;
     }
 
-    public void setUploadWifiBytes(long uploadWifiBytes) {
-        this.uploadWifiBytes = uploadWifiBytes;
+    public void setUploadWifi(Double uploadWifi) {
+        this.uploadWifi = uploadWifi;
     }
 
     public String getOperator1() {
@@ -72,19 +72,19 @@ public class CSVColumn {
         this.operator1 = operator1;
     }
 
-    public long getDownloadMobile1() {
+    public Double getDownloadMobile1() {
         return downloadMobile1;
     }
 
-    public void setDownloadMobile1(long downloadMobile1) {
+    public void setDownloadMobile1(Double downloadMobile1) {
         this.downloadMobile1 = downloadMobile1;
     }
 
-    public long getUploadMobile1() {
+    public Double getUploadMobile1() {
         return uploadMobile1;
     }
 
-    public void setUploadMobile1(long uploadMobile1) {
+    public void setUploadMobile1(Double uploadMobile1) {
         this.uploadMobile1 = uploadMobile1;
     }
 
@@ -96,19 +96,19 @@ public class CSVColumn {
         this.operator2 = operator2;
     }
 
-    public long getDownloadMobile2() {
+    public Double getDownloadMobile2() {
         return downloadMobile2;
     }
 
-    public void setDownloadMobile2(long downloadMobile2) {
+    public void setDownloadMobile2(Double downloadMobile2) {
         this.downloadMobile2 = downloadMobile2;
     }
 
-    public long getUploadMobile2() {
+    public Double getUploadMobile2() {
         return uploadMobile2;
     }
 
-    public void setUploadMobile2(long uploadMobile2) {
+    public void setUploadMobile2(Double uploadMobile2) {
         this.uploadMobile2 = uploadMobile2;
     }
 }

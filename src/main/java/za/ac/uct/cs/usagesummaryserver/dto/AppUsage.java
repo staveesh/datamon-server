@@ -2,11 +2,13 @@ package za.ac.uct.cs.usagesummaryserver.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class AppUsage {
     private String app;
     private String operator;
-    private Long rx;
-    private Long tx;
+    private List<UsageBucket> rxBuckets;
+    private List<UsageBucket> txBuckets;
 
     @JsonProperty("app")
     public String getApp() {
@@ -26,21 +28,21 @@ public class AppUsage {
         this.operator = operator;
     }
 
-    @JsonProperty("rx")
-    public Long getRx() {
-        return rx;
+    @JsonProperty("rxBuckets")
+    public List<UsageBucket> getRxBuckets() {
+        return rxBuckets;
     }
 
-    public void setRx(Long rx) {
-        this.rx = rx;
+    public void setRxBuckets(List<UsageBucket> rxBuckets) {
+        this.rxBuckets = rxBuckets;
     }
 
-    @JsonProperty("tx")
-    public Long getTx() {
-        return tx;
+    @JsonProperty("txBuckets")
+    public List<UsageBucket> getTxBuckets() {
+        return txBuckets;
     }
 
-    public void setTx(Long tx) {
-        this.tx = tx;
+    public void setTxBuckets(List<UsageBucket> txBuckets) {
+        this.txBuckets = txBuckets;
     }
 }

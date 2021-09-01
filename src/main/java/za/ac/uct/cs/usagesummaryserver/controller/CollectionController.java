@@ -16,6 +16,7 @@ import za.ac.uct.cs.usagesummaryserver.db.DbManager;
 import za.ac.uct.cs.usagesummaryserver.dto.AppUsage;
 import za.ac.uct.cs.usagesummaryserver.dto.CSVColumn;
 import za.ac.uct.cs.usagesummaryserver.dto.SummaryData;
+import za.ac.uct.cs.usagesummaryserver.dto.UsageBucket;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class CollectionController {
     private DbManager dbManager;
 
     @RequestMapping(value = "/collect", method = RequestMethod.GET)
-    public ResponseEntity<?> startCollection(@NonNull @RequestParam("start") long start, @NonNull @RequestParam("end") long end){
+    public ResponseEntity<?> startCollection(@NonNull @RequestParam("start") long start, @NonNull @RequestParam("end") long end) {
         JSONObject payload = new JSONObject();
         payload.put("start", start);
         payload.put("end", end);
@@ -40,7 +41,7 @@ public class CollectionController {
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)
-    public void startExport(HttpServletResponse response){
+    public void startExport(HttpServletResponse response) {
         response.setContentType("text/csv");
 
         String headerKey = "Content-Disposition";
@@ -51,12 +52,12 @@ public class CollectionController {
 
         try {
             csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-            String[] csvHeader = {"deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
+            String[] csvHeader = {"deviceId", "startTime", "endTime", "app", "downloadWifi", "uploadWifi",
                     "operator1", "downloadMobile1", "uploadMobile1", "operator2", "downloadMobile2", "uploadMobile2"};
-            String[] nameMapping = {"deviceId", "startTime", "endTime", "app", "downloadWifiBytes", "uploadWifiBytes",
+            String[] nameMapping = {"deviceId", "startTime", "endTime", "app", "downloadWifi", "uploadWifi",
                     "operator1", "downloadMobile1", "uploadMobile1", "operator2", "downloadMobile2", "uploadMobile2"};
 
-            List<String> packages = new ArrayList<String>(){{
+            List<String> packages = new ArrayList<String>() {{
                 add("com.microsoft.teams");
                 add("com.whatsapp");
                 add("com.google.android.apps.meetings");
@@ -72,7 +73,7 @@ public class CollectionController {
                 Date endTime = summary.getEndTime();
                 List<CSVColumn> columns = new ArrayList<>();
                 Map<String, CSVColumn> columnMap = new HashMap<>();
-                for(String pckg : packages){
+                for (String pckg : packages) {
                     CSVColumn col = new CSVColumn();
                     col.setDeviceId(deviceId);
                     col.setStartTime(startTime);
@@ -82,35 +83,76 @@ public class CollectionController {
                     columnMap.put(pckg, col);
                 }
                 // Wifi
-                for(AppUsage wifiSummary : summary.getWifiSummary()){
-                    if(wifiSummary == null)
+                for (AppUsage wifiSummary : summary.getWifiSummary()) {
+                    if (wifiSummary == null)
                         continue;
                     CSVColumn theColumn = columnMap.get(wifiSummary.getApp());
-                    theColumn.setDownloadWifiBytes(wifiSummary.getRx());
-                    theColumn.setUploadWifiBytes(wifiSummary.getTx());
+                    double rxMb = 0.0;
+                    for (UsageBucket bucket : wifiSummary.getRxBuckets()) {
+                        long overlap = Math.min(theColumn.getEndTime().getTime(), bucket.getEnd())
+                                - Math.max(theColumn.getStartTime().getTime(), bucket.getStart());
+                        double usage = (double) (overlap * bucket.getMegabytes()) / (bucket.getEnd() - bucket.getStart());
+                        rxMb += usage;
+                    }
+                    double txMb = 0.0;
+                    for (UsageBucket bucket : wifiSummary.getTxBuckets()) {
+                        long overlap = Math.min(theColumn.getEndTime().getTime(), bucket.getEnd())
+                                - Math.max(theColumn.getStartTime().getTime(), bucket.getStart());
+                        double usage = (double) (overlap * bucket.getMegabytes()) / (bucket.getEnd() - bucket.getStart());
+                        txMb += usage;
+                    }
+                    theColumn.setDownloadWifi(rxMb);
+                    theColumn.setUploadWifi(txMb);
                 }
                 List<String> operators = new ArrayList<>();
                 // Mobile data
-                for(AppUsage mobileSummary : summary.getMobileSummary()){
-                    if(mobileSummary == null)
+                for (AppUsage mobileSummary : summary.getMobileSummary()) {
+                    if (mobileSummary == null)
                         continue;
                     CSVColumn theColumn = columnMap.get(mobileSummary.getApp());
                     String theOperator = mobileSummary.getOperator();
-                    if(!operators.contains(theOperator))
+                    if (!operators.contains(theOperator))
                         operators.add(theOperator);
-                    if(operators.indexOf(theOperator) == 0) {
+                    if (operators.indexOf(theOperator) == 0) {
                         theColumn.setOperator1(theOperator);
-                        theColumn.setDownloadMobile1(mobileSummary.getRx());
-                        theColumn.setUploadMobile1(mobileSummary.getTx());
-                    }
-                    else if(operators.indexOf(theOperator) == 1) {
+                        double rxMb = 0.0;
+                        for (UsageBucket bucket : mobileSummary.getRxBuckets()) {
+                            long overlap = Math.min(theColumn.getEndTime().getTime(), bucket.getEnd())
+                                    - Math.max(theColumn.getStartTime().getTime(), bucket.getStart());
+                            double usage = (double) (overlap * bucket.getMegabytes()) / (bucket.getEnd() - bucket.getStart());
+                            rxMb += usage;
+                        }
+                        double txMb = 0.0;
+                        for (UsageBucket bucket : mobileSummary.getTxBuckets()) {
+                            long overlap = Math.min(theColumn.getEndTime().getTime(), bucket.getEnd())
+                                    - Math.max(theColumn.getStartTime().getTime(), bucket.getStart());
+                            double usage = (double) (overlap * bucket.getMegabytes()) / (bucket.getEnd() - bucket.getStart());
+                            txMb += usage;
+                        }
+                        theColumn.setDownloadMobile1(rxMb);
+                        theColumn.setUploadMobile1(txMb);
+                    } else if (operators.indexOf(theOperator) == 1) {
                         theColumn.setOperator2(theOperator);
-                        theColumn.setDownloadMobile2(mobileSummary.getRx());
-                        theColumn.setUploadMobile2(mobileSummary.getTx());
+                        double rxMb = 0.0;
+                        for (UsageBucket bucket : mobileSummary.getRxBuckets()) {
+                            long overlap = Math.min(theColumn.getEndTime().getTime(), bucket.getEnd())
+                                    - Math.max(theColumn.getStartTime().getTime(), bucket.getStart());
+                            double usage = (double) (overlap * bucket.getMegabytes()) / (bucket.getEnd() - bucket.getStart());
+                            rxMb += usage;
+                        }
+                        double txMb = 0.0;
+                        for (UsageBucket bucket : mobileSummary.getTxBuckets()) {
+                            long overlap = Math.min(theColumn.getEndTime().getTime(), bucket.getEnd())
+                                    - Math.max(theColumn.getStartTime().getTime(), bucket.getStart());
+                            double usage = (double) (overlap * bucket.getMegabytes()) / (bucket.getEnd() - bucket.getStart());
+                            txMb += usage;
+                        }
+                        theColumn.setDownloadMobile2(rxMb);
+                        theColumn.setUploadMobile2(txMb);
                     }
                 }
 
-                for (CSVColumn column: columns){
+                for (CSVColumn column : columns) {
                     csvWriter.write(column, nameMapping);
                 }
             }
